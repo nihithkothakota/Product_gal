@@ -186,6 +186,60 @@ function bindGlobalEvents() {
       }
     });
   }
+
+  // Full-screen Auth Page Tabs
+  $$('#auth-page-tabs .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      $$('#auth-page-tabs .tab').forEach(t => {
+        t.classList.remove('active');
+        t.style.borderBottom = '2px solid transparent';
+        t.style.color = 'var(--text-tertiary)';
+        t.style.fontWeight = '500';
+      });
+      tab.classList.add('active');
+      tab.style.borderBottom = '2px solid var(--text-primary)';
+      tab.style.color = 'var(--text-primary)';
+      tab.style.fontWeight = '600';
+      
+      const isLogin = tab.dataset.tab === 'login';
+      $('#form-login-page').classList.toggle('hidden', !isLogin);
+      $('#form-register-page').classList.toggle('hidden', isLogin);
+      $('#auth-title').textContent = isLogin ? 'Welcome Back' : 'Create Account';
+      $('#auth-desc').textContent = isLogin 
+        ? 'Sign in to your Product Gallery account' 
+        : 'Start saving products from anywhere';
+    });
+  });
+
+  // Full-screen Auth Page Submissions
+  $('#form-login-page').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await doLogin($('#login-page-email').value, $('#login-page-password').value);
+  });
+
+  $('#form-register-page').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await doRegister($('#reg-page-email').value, $('#reg-page-password').value, $('#reg-page-name').value || undefined);
+  });
+
+  // Back button on Auth Page
+  const authBackBtn = $('#btn-auth-back');
+  if (authBackBtn) {
+    authBackBtn.addEventListener('click', () => {
+      const authPage = $('#auth-page');
+      const landingPage = $('#landing-page');
+      if (authPage && landingPage) {
+        authPage.style.opacity = '0';
+        authPage.style.transform = 'scale(0.97)';
+        setTimeout(() => {
+          authPage.classList.add('hidden');
+          landingPage.classList.remove('hidden');
+          landingPage.style.opacity = '1';
+          landingPage.style.transform = 'scale(1)';
+        }, 300);
+      }
+    });
+  }
 }
 
 // ── Navigation ─────────────────────────────────────────
@@ -218,7 +272,7 @@ async function doLogin(email, password) {
     renderSidebarUser();
     closeModal('modal-auth');
     
-    // Pre-fetch collections & products for welcome screen stats
+    // Pre-fetch collections & products
     try {
       const pData = await api('/products?page_size=50');
       state.products = pData.items || [];
@@ -226,8 +280,14 @@ async function doLogin(email, password) {
       state.collections = cData.items || [];
     } catch {}
 
-    sessionStorage.removeItem('pg_entered');
-    renderLandingPage();
+    const authPage = $('#auth-page');
+    if (authPage) {
+      authPage.style.opacity = '0';
+      authPage.style.transform = 'scale(1.05)';
+      setTimeout(() => authPage.classList.add('hidden'), 500);
+    }
+    sessionStorage.setItem('pg_entered', 'true');
+    navigate('home');
     toast('Welcome back! ✨', 'success');
   } catch (e) {
     toast(e.message || 'Invalid credentials', 'error');
@@ -243,7 +303,7 @@ async function doRegister(email, password, display_name) {
     renderSidebarUser();
     closeModal('modal-auth');
     
-    // Pre-fetch collections & products for welcome screen stats
+    // Pre-fetch collections & products
     try {
       const pData = await api('/products?page_size=50');
       state.products = pData.items || [];
@@ -251,8 +311,14 @@ async function doRegister(email, password, display_name) {
       state.collections = cData.items || [];
     } catch {}
 
-    sessionStorage.removeItem('pg_entered');
-    renderLandingPage();
+    const authPage = $('#auth-page');
+    if (authPage) {
+      authPage.style.opacity = '0';
+      authPage.style.transform = 'scale(1.05)';
+      setTimeout(() => authPage.classList.add('hidden'), 500);
+    }
+    sessionStorage.setItem('pg_entered', 'true');
+    navigate('home');
     toast('Account created! 🎉', 'success');
   } catch (e) {
     toast(e.message || 'Registration failed', 'error');
@@ -1353,7 +1419,7 @@ async function api(path, method = 'GET', body) {
     localStorage.removeItem('pg_token');
     renderSidebarUser();
     navigate('home');
-    openModal('modal-auth');
+    showAuthPage();
     toast('Session expired. Please sign in again.', 'error');
     throw new Error('Session expired');
   }
@@ -1373,8 +1439,34 @@ function getProductImage(p) {
 }
 
 // ── UI Helpers ─────────────────────────────────────────
-window.openModal = function(id) { document.getElementById(id).classList.remove('hidden'); lucide.createIcons(); };
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+window.showAuthPage = function() {
+  const authPage = $('#auth-page');
+  if (authPage) {
+    const landingPage = $('#landing-page');
+    if (landingPage) landingPage.classList.add('hidden');
+    
+    authPage.classList.remove('hidden');
+    authPage.style.opacity = '1';
+    authPage.style.transform = 'scale(1)';
+    lucide.createIcons();
+  }
+};
+window.openModal = function(id) {
+  if (id === 'modal-auth') {
+    showAuthPage();
+    return;
+  }
+  document.getElementById(id).classList.remove('hidden');
+  lucide.createIcons();
+};
+function closeModal(id) {
+  if (id === 'modal-auth') {
+    const authPage = $('#auth-page');
+    if (authPage) authPage.classList.add('hidden');
+    return;
+  }
+  document.getElementById(id).classList.add('hidden');
+}
 window.logout = logout;
 
 function showShimmer(el) {
@@ -1457,7 +1549,17 @@ window.renderLandingPage = function() {
     enterBtn.innerHTML = `<span>Sign In to Enter</span> <i data-lucide="log-in"></i>`;
     
     enterBtn.onclick = () => {
-      openModal('modal-auth');
+      page.style.opacity = '0';
+      page.style.transform = 'scale(0.97)';
+      setTimeout(() => {
+        page.classList.add('hidden');
+        const authPage = $('#auth-page');
+        if (authPage) {
+          authPage.classList.remove('hidden');
+          authPage.style.opacity = '1';
+          authPage.style.transform = 'scale(1)';
+        }
+      }, 300);
     };
   }
   

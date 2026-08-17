@@ -342,9 +342,61 @@
     </div>
   </div>
 
+  <!-- Full Screen Login/Register Page -->
+  <div id="auth-page" class="hidden" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--bg-root); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px; overflow:hidden; font-family:var(--font-sans); transition: opacity 0.5s ease, transform 0.5s ease;">
+    <!-- Background Dreamy Blob Glows -->
+    <div style="position:absolute; top:-10%; left:-10%; width:60vw; height:60vw; background:radial-gradient(circle, rgba(255, 107, 107, 0.08) 0%, rgba(255, 255, 255, 0) 70%); filter:blur(80px); pointer-events:none;"></div>
+    <div style="position:absolute; bottom:-10%; right:-10%; width:70vw; height:70vw; background:radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, rgba(255, 255, 255, 0) 70%); filter:blur(80px); pointer-events:none;"></div>
+
+    <div style="width: 100%; max-width: 440px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 36px; box-shadow: 0 30px 80px rgba(0,0,0,0.06); position: relative; z-index: 10;">
+      <!-- Back button to return to Welcome Page -->
+      <button id="btn-auth-back" style="position:absolute; top:20px; left:20px; background:none; border:none; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; gap:6px; font-size:0.85rem; font-weight:500;">
+        <i data-lucide="arrow-left" style="width:16px; height:16px;"></i> Back
+      </button>
+      
+      <div style="text-align:center; margin-top:20px; margin-bottom:28px;">
+        <h2 id="auth-title" style="font-family:var(--font-serif); font-size:2rem; font-weight:normal; color:var(--text-primary);">Welcome Back</h2>
+        <p id="auth-desc" style="color:var(--text-secondary); font-size:0.9rem; margin-top:6px;">Sign in to your Product Gallery account</p>
+      </div>
+
+      <div class="tabs" id="auth-page-tabs" style="margin-bottom:24px; display:flex; border-bottom:1px solid var(--border);">
+        <button class="tab active" data-tab="login" style="flex:1; padding:12px; border:none; background:none; border-bottom:2px solid var(--text-primary); cursor:pointer; font-weight:600; color:var(--text-primary);">Sign In</button>
+        <button class="tab" data-tab="register" style="flex:1; padding:12px; border:none; background:none; border-bottom:2px solid transparent; cursor:pointer; font-weight:500; color:var(--text-tertiary);">Create Account</button>
+      </div>
+
+      <form id="form-login-page" class="form">
+        <div class="field">
+          <label for="login-page-email">Email address</label>
+          <input type="email" id="login-page-email" required placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="login-page-password">Password</label>
+          <input type="password" id="login-page-password" required placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn btn-primary full-w" style="margin-top:10px;">Sign In</button>
+      </form>
+
+      <form id="form-register-page" class="form hidden">
+        <div class="field">
+          <label for="reg-page-name">Full name (optional)</label>
+          <input type="text" id="reg-page-name" placeholder="Meghana" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="reg-page-email">Email address</label>
+          <input type="email" id="reg-page-email" required placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="reg-page-password">Password</label>
+          <input type="password" id="reg-page-password" required placeholder="••••••••" autocomplete="new-password" />
+        </div>
+        <button type="submit" class="btn btn-primary full-w" style="margin-top:10px;">Create Account</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div id="toast-container"></div>
 
-  <script src="main.js?v=8"></script>
+  <script src="main.js?v=9"></script>
 </body>
 </html>
