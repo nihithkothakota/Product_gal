@@ -8,7 +8,7 @@ const API = 'http://localhost:8000/v1';
 const BASE = 'http://localhost:8000';
 
 // Safe lucide fallback: CDN runs before this script; guard against CDN failure
-var lucide = window.lucide || { createIcons: function() {} };
+var lucide = window.lucide || { createIcons: function () { } };
 
 // ── State ──────────────────────────────────────────────
 const state = {
@@ -25,7 +25,7 @@ const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
 // Card background colors for products without images
-const CARD_BG_CLASSES = ['card-bg-1','card-bg-2','card-bg-3','card-bg-4','card-bg-5','card-bg-6','card-bg-7','card-bg-8'];
+const CARD_BG_CLASSES = ['card-bg-1', 'card-bg-2', 'card-bg-3', 'card-bg-4', 'card-bg-5', 'card-bg-6', 'card-bg-7', 'card-bg-8'];
 function getCardBg(id) {
   let hash = 0;
   for (let i = 0; i < (id || '').length; i++) hash = ((hash << 5) - hash) + id.charCodeAt(i);
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       state.products = pData.items || [];
       const cData = await api('/collections');
       state.collections = cData.items || [];
-    } catch {}
+    } catch { }
   }
   renderSidebarUser();
   navigate('home');
@@ -200,13 +200,13 @@ function bindGlobalEvents() {
       tab.style.borderBottom = '2px solid var(--text-primary)';
       tab.style.color = 'var(--text-primary)';
       tab.style.fontWeight = '600';
-      
+
       const isLogin = tab.dataset.tab === 'login';
       $('#form-login-page').classList.toggle('hidden', !isLogin);
       $('#form-register-page').classList.toggle('hidden', isLogin);
       $('#auth-title').textContent = isLogin ? 'Welcome Back' : 'Create Account';
-      $('#auth-desc').textContent = isLogin 
-        ? 'Sign in to your Product Gallery account' 
+      $('#auth-desc').textContent = isLogin
+        ? 'Sign in to your Product Gallery account'
         : 'Start saving products from anywhere';
     });
   });
@@ -271,14 +271,14 @@ async function doLogin(email, password) {
     await fetchProfile();
     renderSidebarUser();
     closeModal('modal-auth');
-    
+
     // Pre-fetch collections & products
     try {
       const pData = await api('/products?page_size=50');
       state.products = pData.items || [];
       const cData = await api('/collections');
       state.collections = cData.items || [];
-    } catch {}
+    } catch { }
 
     const authPage = $('#auth-page');
     if (authPage) {
@@ -302,14 +302,14 @@ async function doRegister(email, password, display_name) {
     await fetchProfile();
     renderSidebarUser();
     closeModal('modal-auth');
-    
+
     // Pre-fetch collections & products
     try {
       const pData = await api('/products?page_size=50');
       state.products = pData.items || [];
       const cData = await api('/collections');
       state.collections = cData.items || [];
-    } catch {}
+    } catch { }
 
     const authPage = $('#auth-page');
     if (authPage) {
@@ -417,7 +417,7 @@ async function renderHome() {
     state.products.forEach(p => {
       if (p.brand) brandCounts[p.brand] = (brandCounts[p.brand] || 0) + 1;
     });
-    const topBrand = Object.entries(brandCounts).sort((a,b) => b[1] - a[1])[0];
+    const topBrand = Object.entries(brandCounts).sort((a, b) => b[1] - a[1])[0];
 
     c.innerHTML = `
       <div class="content-inner">
@@ -440,7 +440,7 @@ async function renderHome() {
                 Welcome to your happy place, Meghana! ✨
               </h2>
               <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; font-weight: 300;">
-                May your day be as lovely and inspired as the collections you design. Curating joy with you today! 💖
+                May your day be as beautiful and inspiring as the collections you create, my love—just as you make my world more beautiful every day. ❤️
               </p>
             </div>
             <div style="font-size: 1.5rem; animation: sparklePulse 3s infinite; user-select: none;">✨</div>
@@ -572,7 +572,7 @@ function recentProductCard(p) {
 }
 
 function renderMosaic(col) {
-  const colProducts = state.products.filter(p => 
+  const colProducts = state.products.filter(p =>
     p.collections && p.collections.some(c => c.id === col.id)
   );
 
@@ -660,7 +660,7 @@ async function renderGallery(favsOnly = false) {
       try {
         const catData = await api('/categories');
         state.categories = catData.categories || catData || [];
-      } catch {}
+      } catch { }
     }
 
     const sectionLabel = favsOnly ? 'YOUR SAVED FAVORITES' : 'EVERY PRODUCT YOU LOVED';
@@ -914,7 +914,7 @@ async function renderCollectionDetail(collectionId) {
       try {
         const catData = await api('/categories');
         state.categories = catData.categories || catData || [];
-      } catch {}
+      } catch { }
     }
 
     const emoji = col.emoji || '📁';
@@ -1067,7 +1067,7 @@ async function renderPriceDropsPage() {
 }
 
 // ── Product Detail ─────────────────────────────────────
-window.showDetail = async function(id) {
+window.showDetail = async function (id) {
   const p = state.products.find(x => x.id === id);
   if (!p) return;
 
@@ -1076,7 +1076,7 @@ window.showDetail = async function(id) {
     try {
       const catData = await api('/categories');
       state.categories = catData.categories || catData || [];
-    } catch {}
+    } catch { }
   }
 
   const price = p.price_current ? `₹${p.price_current.toLocaleString('en-IN')}` : '—';
@@ -1142,18 +1142,18 @@ window.showDetail = async function(id) {
   }
 };
 
-window.toggleFavAndRefresh = async function(id) {
+window.toggleFavAndRefresh = async function (id) {
   await toggleFavorite(id);
   showDetail(id);
 };
 
-window.deleteAndClose = async function(id) {
+window.deleteAndClose = async function (id) {
   await deleteProduct(id);
   closeModal('modal-detail');
 };
 
 // ── Actions ────────────────────────────────────────────
-window.toggleFavorite = async function(id) {
+window.toggleFavorite = async function (id) {
   try {
     const updated = await api(`/products/${id}/favorite`, 'POST');
     const idx = state.products.findIndex(p => p.id === id);
@@ -1343,7 +1343,7 @@ async function refreshCategoriesForPicker() {
     try {
       const catData = await api('/categories');
       state.categories = catData.categories || catData || [];
-    } catch {}
+    } catch { }
   }
 
   sel.innerHTML = '<option value="">None (uncategorized)</option>' +
@@ -1465,19 +1465,19 @@ function getProductImage(p) {
 }
 
 // ── UI Helpers ─────────────────────────────────────────
-window.showAuthPage = function() {
+window.showAuthPage = function () {
   const authPage = $('#auth-page');
   if (authPage) {
     const landingPage = $('#landing-page');
     if (landingPage) landingPage.classList.add('hidden');
-    
+
     authPage.classList.remove('hidden');
     authPage.style.opacity = '1';
     authPage.style.transform = 'scale(1)';
     lucide.createIcons();
   }
 };
-window.openModal = function(id) {
+window.openModal = function (id) {
   if (id === 'modal-auth') {
     showAuthPage();
     return;
@@ -1545,7 +1545,7 @@ function avgPrice(products) {
 }
 
 // ── Landing Page ──────────────────────────────────────
-window.renderLandingPage = function() {
+window.renderLandingPage = function () {
   const page = $('#landing-page');
   if (!page) return;
 
@@ -1567,7 +1567,7 @@ window.renderLandingPage = function() {
       subtitle.textContent = "Your curated memory of style, taste, and items you love.";
     }
     enterBtn.innerHTML = `<span>Enter Gallery</span> <i data-lucide="arrow-right"></i>`;
-    
+
     enterBtn.onclick = () => {
       page.style.opacity = '0';
       page.style.transform = 'scale(1.05)';
@@ -1578,7 +1578,7 @@ window.renderLandingPage = function() {
     greeting.textContent = "Product Gallery.";
     subtitle.textContent = "Your curated memory of style, taste, and items you love.";
     enterBtn.innerHTML = `<span>Sign In to Enter</span> <i data-lucide="log-in"></i>`;
-    
+
     enterBtn.onclick = () => {
       page.style.opacity = '0';
       page.style.transform = 'scale(0.97)';
@@ -1593,7 +1593,7 @@ window.renderLandingPage = function() {
       }, 300);
     };
   }
-  
+
   page.classList.remove('hidden');
   page.style.opacity = '1';
   page.style.transform = 'scale(1)';
