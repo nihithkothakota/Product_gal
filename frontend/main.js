@@ -421,6 +421,32 @@ async function renderHome() {
 
     c.innerHTML = `
       <div class="content-inner">
+        <!-- Joyful Welcome Banner for Meghana -->
+        ${state.user && state.user.email === 'meghana@gmail.com' ? `
+          <div class="joyful-welcome-card" style="background: linear-gradient(135deg, rgba(255, 107, 107, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%); border: 1px dashed rgba(255, 107, 107, 0.25); border-radius: var(--radius-lg); padding: 24px 30px; margin-bottom: 35px; position: relative; overflow: hidden; display: flex; align-items: center; gap: 24px; animation: fadeIn 0.8s ease;">
+            <style>
+              @keyframes bounceJoy {
+                0%, 100% { transform: translateY(0) scale(1); }
+                50% { transform: translateY(-8px) scale(1.1); }
+              }
+              @keyframes sparklePulse {
+                0%, 100% { opacity: 0.3; transform: scale(0.9); }
+                50% { opacity: 1; transform: scale(1.1); }
+              }
+            </style>
+            <div style="font-size: 2.8rem; display: flex; align-items: center; justify-content: center; animation: bounceJoy 2.5s ease-in-out infinite; user-select: none;">🌸</div>
+            <div style="flex: 1;">
+              <h2 style="font-family: var(--font-serif); font-size: 2rem; color: var(--text-primary); margin-bottom: 6px; font-weight: normal; letter-spacing: -0.4px;">
+                Welcome to your happy place, Meghana! ✨
+              </h2>
+              <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; font-weight: 300;">
+                May your day be as lovely and inspired as the collections you design. Curating joy with you today! 💖
+              </p>
+            </div>
+            <div style="font-size: 1.5rem; animation: sparklePulse 3s infinite; user-select: none;">✨</div>
+          </div>
+        ` : ''}
+
         <!-- Recently Saved Section -->
         <div class="carousel-container">
           <div class="section-header">
@@ -1533,8 +1559,13 @@ window.renderLandingPage = function() {
   }
 
   if (state.token && state.user) {
-    greeting.textContent = `Hello, ${state.user.name || 'Meghana'}.`;
-    subtitle.textContent = "Your curated memory of style, taste, and items you love.";
+    if (state.user.email === 'meghana@gmail.com') {
+      greeting.textContent = "Hello, Meghana! ✨";
+      subtitle.textContent = "Welcome back to your curated space of style and inspiration. 🌸";
+    } else {
+      greeting.textContent = `Hello, ${state.user.name || 'Meghana'}.`;
+      subtitle.textContent = "Your curated memory of style, taste, and items you love.";
+    }
     enterBtn.innerHTML = `<span>Enter Gallery</span> <i data-lucide="arrow-right"></i>`;
     
     enterBtn.onclick = () => {
