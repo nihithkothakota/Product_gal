@@ -1,0 +1,61 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: product-gallery-backend
+    env: docker
+    dockerContext: backend
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: product-gallery-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: product-gallery-redis
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: MINIO_ENDPOINT
+        sync: false
+      - key: MINIO_ACCESS_KEY
+        sync: false
+      - key: MINIO_SECRET_KEY
+        sync: false
+      - key: MINIO_BUCKET
+        sync: false
+      - key: MINIO_SECURE
+        value: "True"
+
+  # Frontend Static Site
+  - type: web
+    name: product-gallery-frontend
+    env: static
+    rootDir: frontend
+    publishDir: .
+    buildCommand: ""
+    routes:
+      - type: rewrite
+        source: /v1/*
+        destination: https://product-gallery-backend.onrender.com/v1/*
+      - type: rewrite
+        source: /health
+        destination: https://product-gallery-backend.onrender.com/health
+      - type: rewrite
+        source: /ready
+        destination: https://product-gallery-backend.onrender.com/ready
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+# Databases
+databases:
+  - name: product-gallery-db
+    plan: free
+
+# Redis
+redis:
+  name: product-gallery-redis
+  plan: free

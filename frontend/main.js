@@ -4,8 +4,8 @@
    mosaic collections, AI brain card
    ═══════════════════════════════════════════════════════ */
 
-const API = 'http://localhost:8000/v1';
-const BASE = 'http://localhost:8000';
+const API = window.location.origin.includes('localhost') ? 'http://localhost:8000/v1' : '/v1';
+const BASE = window.location.origin.includes('localhost') ? 'http://localhost:8000' : '';
 
 // Safe lucide fallback: CDN runs before this script; guard against CDN failure
 var lucide = window.lucide || { createIcons: function () { } };
