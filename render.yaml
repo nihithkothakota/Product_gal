@@ -4,7 +4,7 @@ services:
     name: product-gallery-backend
     env: docker
     dockerContext: backend
-    dockerfilePath: Dockerfile
+    dockerfilePath: backend/Dockerfile
     plan: free
     envVars:
       - key: DATABASE_URL
