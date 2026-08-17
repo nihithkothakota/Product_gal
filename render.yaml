@@ -34,7 +34,7 @@ services:
     name: product-gallery-frontend
     env: static
     rootDir: frontend
-    publishDir: .
+    publishPath: .
     buildCommand: ""
     routes:
       - type: rewrite
@@ -50,12 +50,12 @@ services:
         source: /*
         destination: /index.html
 
+  # Redis Instance
+  - type: redis
+    name: product-gallery-redis
+    plan: free
+
 # Databases
 databases:
   - name: product-gallery-db
     plan: free
-
-# Redis
-redis:
-  name: product-gallery-redis
-  plan: free
