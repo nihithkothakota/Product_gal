@@ -42,9 +42,18 @@ const SOURCE_LABELS = {
 // ── Boot ───────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   bindGlobalEvents();
-  if (state.token) await fetchProfile();
+  if (state.token) {
+    await fetchProfile();
+    try {
+      const pData = await api('/products?page_size=50');
+      state.products = pData.items || [];
+      const cData = await api('/collections');
+      state.collections = cData.items || [];
+    } catch {}
+  }
   renderSidebarUser();
   navigate('home');
+  renderLandingPage();
   lucide.createIcons();
 
   // Keyboard shortcut: Escape to close modals
@@ -208,8 +217,18 @@ async function doLogin(email, password) {
     await fetchProfile();
     renderSidebarUser();
     closeModal('modal-auth');
+    
+    // Pre-fetch collections & products for welcome screen stats
+    try {
+      const pData = await api('/products?page_size=50');
+      state.products = pData.items || [];
+      const cData = await api('/collections');
+      state.collections = cData.items || [];
+    } catch {}
+
+    sessionStorage.removeItem('pg_entered');
+    renderLandingPage();
     toast('Welcome back! ✨', 'success');
-    navigate('home');
   } catch (e) {
     toast(e.message || 'Invalid credentials', 'error');
   }
@@ -223,8 +242,18 @@ async function doRegister(email, password, display_name) {
     await fetchProfile();
     renderSidebarUser();
     closeModal('modal-auth');
+    
+    // Pre-fetch collections & products for welcome screen stats
+    try {
+      const pData = await api('/products?page_size=50');
+      state.products = pData.items || [];
+      const cData = await api('/collections');
+      state.collections = cData.items || [];
+    } catch {}
+
+    sessionStorage.removeItem('pg_entered');
+    renderLandingPage();
     toast('Account created! 🎉', 'success');
-    navigate('home');
   } catch (e) {
     toast(e.message || 'Registration failed', 'error');
   }
@@ -244,9 +273,10 @@ function logout() {
   state.token = null;
   state.user = null;
   localStorage.removeItem('pg_token');
+  sessionStorage.removeItem('pg_entered');
   renderSidebarUser();
   toast('Signed out', 'info');
-  navigate('home');
+  renderLandingPage();
 }
 
 function renderSidebarUser() {
@@ -1395,3 +1425,63 @@ function avgPrice(products) {
   const avg = priced.reduce((s, p) => s + p.price_current, 0) / priced.length;
   return '₹' + Math.round(avg).toLocaleString('en-IN');
 }
+
+// ── Landing Page ──────────────────────────────────────
+window.renderLandingPage = function() {
+  const page = $('#landing-page');
+  if (!page) return;
+
+  const greeting = $('#landing-greeting');
+  const subtitle = $('#landing-subtitle');
+  const context = $('#landing-context');
+  const enterBtn = $('#btn-enter-gallery');
+
+  if (sessionStorage.getItem('pg_entered') === 'true') {
+    page.classList.add('hidden');
+    return;
+  }
+
+  if (state.token && state.user) {
+    greeting.textContent = `Hello, ${state.user.name || 'Meghana'}.`;
+    subtitle.textContent = "Your curated memory of style, taste, and items you love.";
+    
+    const prodCount = state.products.length;
+    const collCount = state.collections.length;
+    context.innerHTML = `
+      <div class="stat-item">
+        <div style="font-family:var(--font-serif); font-size:2rem; color:var(--coral); font-weight:bold;">${prodCount}</div>
+        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; margin-top:4px;">Products</div>
+      </div>
+      <div class="stat-item">
+        <div style="font-family:var(--font-serif); font-size:2rem; color:var(--purple); font-weight:bold;">${collCount}</div>
+        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; margin-top:4px;">Collections</div>
+      </div>
+    `;
+    enterBtn.innerHTML = `<span>Enter Gallery</span> <i data-lucide="arrow-right"></i>`;
+    
+    enterBtn.onclick = () => {
+      page.style.opacity = '0';
+      page.style.transform = 'scale(1.05)';
+      sessionStorage.setItem('pg_entered', 'true');
+      setTimeout(() => page.classList.add('hidden'), 500);
+    };
+  } else {
+    greeting.textContent = "Product Gallery.";
+    subtitle.textContent = "Your curated memory of style, taste, and items you love.";
+    context.innerHTML = `
+      <div style="font-size:0.9rem; color:var(--text-secondary); max-width:400px; line-height:1.6; font-family:var(--font-sans);">
+        Save items, create customized collections, and track price drops in one beautiful visual space.
+      </div>
+    `;
+    enterBtn.innerHTML = `<span>Sign In to Enter</span> <i data-lucide="log-in"></i>`;
+    
+    enterBtn.onclick = () => {
+      openModal('modal-auth');
+    };
+  }
+  
+  page.classList.remove('hidden');
+  page.style.opacity = '1';
+  page.style.transform = 'scale(1)';
+  lucide.createIcons();
+};

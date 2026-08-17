@@ -255,6 +255,54 @@
     </div>
   </div>
 
+  <!-- Full Screen Aesthetic Landing Page -->
+  <div id="landing-page" class="hidden" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--bg-root); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; overflow:hidden; font-family:var(--font-sans); transition: opacity 0.5s ease, transform 0.5s ease;">
+    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .landing-animate {
+        animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .stat-item {
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 15px 25px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      }
+    </style>
+    <!-- Background Dreamy Blob Glows -->
+    <div style="position:absolute; top:-10%; left:-10%; width:60vw; height:60vw; background:radial-gradient(circle, rgba(255, 107, 107, 0.08) 0%, rgba(255, 255, 255, 0) 70%); filter:blur(80px); pointer-events:none;"></div>
+    <div style="position:absolute; bottom:-10%; right:-10%; width:70vw; height:70vw; background:radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, rgba(255, 255, 255, 0) 70%); filter:blur(80px); pointer-events:none;"></div>
+    
+    <div class="landing-animate" style="text-align:center; max-width:650px; z-index:10;">
+      <div style="font-size:0.75rem; letter-spacing:4px; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:24px; font-weight:600;">WELCOME TO YOUR UNIVERSE</div>
+      
+      <!-- Greeting Header -->
+      <h1 id="landing-greeting" style="font-family:var(--font-serif); font-size:4.5rem; color:var(--text-primary); margin-bottom:20px; font-weight:normal; line-height:1.1;">
+        Hello, Meghana.
+      </h1>
+      
+      <!-- Sub-headline / Quote -->
+      <p id="landing-subtitle" style="font-size:1.2rem; color:var(--text-secondary); line-height:1.6; margin-bottom:45px; font-weight:300; font-family:var(--font-sans);">
+        Your curated memory of style, taste, and items you love.
+      </p>
+      
+      <!-- Stats / Action context -->
+      <div id="landing-context" style="margin-bottom:45px; display:flex; justify-content:center; gap:24px;">
+        <!-- Populated dynamically by main.js -->
+      </div>
+      
+      <!-- Action Button -->
+      <button id="btn-enter-gallery" class="btn btn-primary" style="padding:18px 48px; font-size:1.1rem; border-radius:var(--radius-full); font-weight:600; cursor:pointer; box-shadow:0 12px 30px rgba(0,0,0,0.06); border:none; display:inline-flex; align-items:center; gap:8px;">
+        <span>Enter Gallery</span> <i data-lucide="arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div id="toast-container"></div>
 
