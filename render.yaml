@@ -54,6 +54,7 @@ services:
   - type: redis
     name: product-gallery-redis
     plan: free
+    ipAllowList: []
 
 # Databases
 databases:
