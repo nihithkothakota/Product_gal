@@ -31,6 +31,16 @@ async def lifespan(app: FastAPI):
         environment=settings.environment,
     )
 
+    # Run database migrations automatically on startup
+    try:
+        from alembic.config import Config
+        from alembic import command
+        alembic_cfg = Config("alembic.ini")
+        command.upgrade(alembic_cfg, "head")
+        logger.info("db_migrations_completed")
+    except Exception as e:
+        logger.error("db_migrations_failed", error=str(e))
+
     # Ensure S3 bucket exists (useful for local dev with MinIO)
     try:
         ensure_bucket_exists()
