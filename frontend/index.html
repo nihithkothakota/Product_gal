@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Gallery — Dashboard</title>
+  <meta name="description" content="Your personal product memory — save, organize, rediscover.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="btn-mobile-menu" aria-label="Open menu">
+      <i data-lucide="menu"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <i data-lucide="shopping-bag"></i>
+        </div>
+        <span class="brand-text">Product<br><span class="brand-text-sub">Gallery.</span></span>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <a href="#" class="nav-link active" data-view="home">
+          <i data-lucide="home"></i>
+          <span>Home</span>
+        </a>
+        <a href="#" class="nav-link" data-view="gallery">
+          <i data-lucide="image"></i>
+          <span>Gallery</span>
+        </a>
+        <a href="#" class="nav-link" data-view="collections">
+          <i data-lucide="layers"></i>
+          <span>Collections</span>
+        </a>
+        <a href="#" class="nav-link" data-view="wishlist">
+          <i data-lucide="heart"></i>
+          <span>Wishlist</span>
+        </a>
+        <a href="#" class="nav-link" data-view="discover">
+          <i data-lucide="sparkles"></i>
+          <span>Discover</span>
+        </a>
+        <a href="#" class="nav-link" data-view="pricedrops">
+          <i data-lucide="trending-down"></i>
+          <span>Price Drops</span>
+        </a>
+        <a href="#" class="nav-link" data-view="health">
+          <i data-lucide="share-2"></i>
+          <span>Shared</span>
+        </a>
+        <a href="#" class="nav-link" data-view="settings">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-user" id="sidebar-user">
+        <!-- Populated by JS -->
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-wrapper">
+      <!-- Header (hidden, kept for structure) -->
+      <header class="header"></header>
+
+      <!-- Content -->
+      <main class="content" id="content">
+        <!-- Rendered by JS -->
+      </main>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" id="fab-add" aria-label="Add product" title="Save a product">
+    <i data-lucide="plus"></i>
+  </button>
+
+  <!-- Auth Modal -->
+  <div class="modal-backdrop hidden" id="modal-auth">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Welcome back</h2>
+        <p class="modal-desc">Sign in to your Product Gallery account</p>
+        <button class="modal-close-btn" data-close="modal-auth">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="tabs" id="auth-tabs">
+        <button class="tab active" data-tab="login">Sign In</button>
+        <button class="tab" data-tab="register">Create Account</button>
+      </div>
+      <form id="form-login" class="form">
+        <div class="field">
+          <label for="login-email">Email address</label>
+          <input type="email" id="login-email" required placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn btn-primary full-w">Sign In</button>
+      </form>
+      <form id="form-register" class="form hidden">
+        <div class="field">
+          <label for="reg-email">Email address</label>
+          <input type="email" id="reg-email" required placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label for="reg-name">Display name</label>
+          <input type="text" id="reg-name" placeholder="John Doe" />
+        </div>
+        <div class="field">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" required placeholder="Min 6 characters" />
+        </div>
+        <button type="submit" class="btn btn-primary full-w">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div class="modal-backdrop hidden" id="modal-product">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <h2>Save a Product</h2>
+        <p class="modal-desc">Paste a URL or enter details manually</p>
+        <button class="modal-close-btn" data-close="modal-product">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-product" class="form">
+        <div class="field-row">
+          <div class="field flex-2">
+            <label for="prod-name">Product Name</label>
+            <input type="text" id="prod-name" placeholder="Product Name (e.g. Sony WH-1000XM5)" />
+          </div>
+          <div class="field flex-2">
+            <label for="prod-url">Product URL</label>
+            <input type="text" id="prod-url" placeholder="https://amazon.in/... (optional)" />
+          </div>
+          <div class="field flex-1">
+            <label for="prod-source">Source</label>
+            <select id="prod-source">
+              <option value="manual">Manual</option>
+              <option value="web">Web URL</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field flex-2">
+            <label for="prod-image-url">Image URL</label>
+            <input type="text" id="prod-image-url" placeholder="Direct link to a photo (optional)" />
+          </div>
+          <div class="field flex-2">
+            <label for="prod-image-file">Upload Photo</label>
+            <input type="file" id="prod-image-file" accept="image/*" style="font-size:0.8rem;padding:5px;" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field flex-1">
+            <label for="prod-brand">Brand</label>
+            <input type="text" id="prod-brand" placeholder="Nike, Apple..." />
+          </div>
+          <div class="field flex-1">
+            <label for="prod-price">Price (₹)</label>
+            <input type="number" step="0.01" id="prod-price" placeholder="999.00" />
+          </div>
+          <div class="field flex-1">
+            <label for="prod-priority">Priority</label>
+            <select id="prod-priority">
+              <option value="0">None</option>
+              <option value="1">Low</option>
+              <option value="2">Medium</option>
+              <option value="3" selected>Normal</option>
+              <option value="4">High</option>
+              <option value="5">Must Buy</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="prod-notes">Notes</label>
+          <textarea id="prod-notes" rows="2" placeholder="Why do you want this?"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field flex-1">
+            <label for="prod-collection">Add to Collection</label>
+            <select id="prod-collection">
+              <option value="">None (unsorted)</option>
+            </select>
+          </div>
+          <div class="field flex-1">
+            <label for="prod-category">Category</label>
+            <select id="prod-category">
+              <option value="">None (uncategorized)</option>
+            </select>
+          </div>
+        </div>
+        <div id="prod-preview-container" class="hidden" style="margin-bottom:15px; text-align:center; border:1px dashed var(--border); border-radius:var(--radius-md); padding:10px; background:var(--bg-card);">
+          <div style="font-size:0.75rem; color:var(--text-tertiary); margin-bottom:5px;">LIVE PREVIEW</div>
+          <img id="prod-preview-img" src="" alt="Product Preview" style="max-height:150px; max-width:100%; object-fit:contain; border-radius:var(--radius-sm);" />
+        </div>
+        <button type="submit" class="btn btn-primary full-w">
+          <i data-lucide="plus"></i> Save Product
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Collection Modal -->
+  <div class="modal-backdrop hidden" id="modal-collection">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>New Collection</h2>
+        <p class="modal-desc">Organize your saved products</p>
+        <button class="modal-close-btn" data-close="modal-collection">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-collection" class="form">
+        <div class="field-row">
+          <div class="field" style="width: 60px;">
+            <label for="coll-emoji">Emoji</label>
+            <input type="text" id="coll-emoji" placeholder="📁" maxlength="4" style="text-align:center;font-size:1.3rem;" />
+          </div>
+          <div class="field flex-1">
+            <label for="coll-name">Name</label>
+            <input type="text" id="coll-name" required placeholder="Tech Wishlist" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="coll-desc">Description (optional)</label>
+          <input type="text" id="coll-desc" placeholder="Gadgets I want to buy" />
+        </div>
+        <button type="submit" class="btn btn-primary full-w">Create Collection</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Product Detail Modal -->
+  <div class="modal-backdrop hidden" id="modal-detail">
+    <div class="modal modal-wide">
+      <button class="modal-close-btn" data-close="modal-detail">
+        <i data-lucide="x"></i>
+      </button>
+      <div id="detail-body"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast-container"></div>
+
+  <script src="main.js?v=7"></script>
+</body>
+</html>
