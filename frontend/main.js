@@ -1433,7 +1433,6 @@ window.renderLandingPage = function() {
 
   const greeting = $('#landing-greeting');
   const subtitle = $('#landing-subtitle');
-  const context = $('#landing-context');
   const enterBtn = $('#btn-enter-gallery');
 
   if (sessionStorage.getItem('pg_entered') === 'true') {
@@ -1444,19 +1443,6 @@ window.renderLandingPage = function() {
   if (state.token && state.user) {
     greeting.textContent = `Hello, ${state.user.name || 'Meghana'}.`;
     subtitle.textContent = "Your curated memory of style, taste, and items you love.";
-    
-    const prodCount = state.products.length;
-    const collCount = state.collections.length;
-    context.innerHTML = `
-      <div class="stat-item">
-        <div style="font-family:var(--font-serif); font-size:2rem; color:var(--coral); font-weight:bold;">${prodCount}</div>
-        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; margin-top:4px;">Products</div>
-      </div>
-      <div class="stat-item">
-        <div style="font-family:var(--font-serif); font-size:2rem; color:var(--purple); font-weight:bold;">${collCount}</div>
-        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; margin-top:4px;">Collections</div>
-      </div>
-    `;
     enterBtn.innerHTML = `<span>Enter Gallery</span> <i data-lucide="arrow-right"></i>`;
     
     enterBtn.onclick = () => {
@@ -1468,11 +1454,6 @@ window.renderLandingPage = function() {
   } else {
     greeting.textContent = "Product Gallery.";
     subtitle.textContent = "Your curated memory of style, taste, and items you love.";
-    context.innerHTML = `
-      <div style="font-size:0.9rem; color:var(--text-secondary); max-width:400px; line-height:1.6; font-family:var(--font-sans);">
-        Save items, create customized collections, and track price drops in one beautiful visual space.
-      </div>
-    `;
     enterBtn.innerHTML = `<span>Sign In to Enter</span> <i data-lucide="log-in"></i>`;
     
     enterBtn.onclick = () => {
