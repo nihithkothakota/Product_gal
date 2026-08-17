@@ -30,9 +30,8 @@ services:
         value: "True"
 
   # Frontend Static Site
-  - type: web
+  - type: static
     name: product-gallery-frontend
-    env: static
     rootDir: frontend
     publishPath: .
     buildCommand: ""
