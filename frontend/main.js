@@ -1527,7 +1527,7 @@ window.renderLandingPage = function() {
   const subtitle = $('#landing-subtitle');
   const enterBtn = $('#btn-enter-gallery');
 
-  if (sessionStorage.getItem('pg_entered') === 'true') {
+  if (state.token && sessionStorage.getItem('pg_entered') === 'true') {
     page.classList.add('hidden');
     return;
   }
