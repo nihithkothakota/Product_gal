@@ -122,6 +122,7 @@ async def extract_from_url(url: str) -> ExtractionResult:
         source=detect_source(url),
     )
 
+    direct_success = True
     try:
         async with httpx.AsyncClient(
             follow_redirects=True,
@@ -140,19 +141,21 @@ async def extract_from_url(url: str) -> ExtractionResult:
             response = await client.get(url)
             response.raise_for_status()
     except httpx.HTTPError as e:
-        logger.warning("url_fetch_failed", url=url, error=str(e))
-        return result
+        logger.warning("url_fetch_failed_trying_fallback", url=url, error=str(e))
+        direct_success = False
 
-    soup = BeautifulSoup(response.text, "lxml")
+    if direct_success:
+        soup = BeautifulSoup(response.text, "lxml")
+        # ── 1. Try JSON-LD ───────────────────────────────────────────────────
+        _extract_json_ld(soup, result)
+        # ── 2. Try OpenGraph ─────────────────────────────────────────────────
+        _extract_og_tags(soup, result)
+        # ── 3. Fallback to standard HTML ─────────────────────────────────────
+        _extract_html_fallback(soup, result)
 
-    # ── 1. Try JSON-LD ───────────────────────────────────────────────────
-    _extract_json_ld(soup, result)
-
-    # ── 2. Try OpenGraph ─────────────────────────────────────────────────
-    _extract_og_tags(soup, result)
-
-    # ── 3. Fallback to standard HTML ─────────────────────────────────────
-    _extract_html_fallback(soup, result)
+    # If direct extraction failed or returned insufficient details, try Microlink fallback
+    if not result.title or not result.image_urls:
+        await _extract_via_microlink(url, result)
 
     # Resolve and clean image URLs to be absolute
     from urllib.parse import urljoin
@@ -384,3 +387,27 @@ def _extract_html_fallback(soup: BeautifulSoup, result: ExtractionResult) -> Non
                 result.image_urls.append(src)
                 if len(result.image_urls) >= 3:
                     break
+
+
+async def _extract_via_microlink(url: str, result: ExtractionResult) -> None:
+    """Fallback extraction using Microlink API to bypass bot detection/JS rendering."""
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.get(f"https://api.microlink.io/?url={url}")
+            if resp.status_code == 200:
+                data = resp.json()
+                if data.get("status") == "success":
+                    item = data.get("data", {})
+                    result.title = result.title or item.get("title")
+                    result.description = result.description or item.get("description")
+                    result.store = result.store or item.get("publisher")
+                    
+                    # Add image
+                    img_data = item.get("image", {})
+                    img_url = img_data.get("url") if isinstance(img_data, dict) else img_data
+                    if img_url and img_url not in result.image_urls:
+                        result.image_urls.insert(0, img_url)
+                        
+                    logger.info("microlink_extraction_success", url=url)
+    except Exception as e:
+        logger.warning("microlink_extraction_failed", url=url, error=str(e))
