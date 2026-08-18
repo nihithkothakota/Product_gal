@@ -78,6 +78,13 @@ app.include_router(categories.router, prefix=api_prefix)
 app.include_router(search.router, prefix=api_prefix)
 
 
+# ── Static Files Fallback ────────────────────────────────────────────────
+import os
+from fastapi.staticfiles import StaticFiles
+os.makedirs("static/uploads", exist_ok=True)
+app.mount("/v1/static", StaticFiles(directory="static"), name="static")
+
+
 # ── Health Check ─────────────────────────────────────────────────────────
 @app.get("/health", tags=["System"])
 async def health_check():

@@ -187,27 +187,40 @@ function bindGlobalEvents() {
     });
   }
 
-  // Full-screen Auth Page Tabs
-  $$('#auth-page-tabs .tab').forEach(tab => {
+  // Full-screen Auth Page Tabs (Premium)
+  $$('#auth-page-tabs .auth-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      $$('#auth-page-tabs .tab').forEach(t => {
-        t.classList.remove('active');
-        t.style.borderBottom = '2px solid transparent';
-        t.style.color = 'var(--text-tertiary)';
-        t.style.fontWeight = '500';
-      });
+      $$('#auth-page-tabs .auth-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-      tab.style.borderBottom = '2px solid var(--text-primary)';
-      tab.style.color = 'var(--text-primary)';
-      tab.style.fontWeight = '600';
 
+      const indicator = $('#auth-page-tabs .auth-tab-indicator');
       const isLogin = tab.dataset.tab === 'login';
+      if (indicator) {
+        indicator.classList.toggle('right', !isLogin);
+      }
+
       $('#form-login-page').classList.toggle('hidden', !isLogin);
       $('#form-register-page').classList.toggle('hidden', isLogin);
       $('#auth-title').textContent = isLogin ? 'Welcome Back' : 'Create Account';
       $('#auth-desc').textContent = isLogin
         ? 'Sign in to your Product Gallery account'
         : 'Start saving products from anywhere';
+    });
+  });
+
+  // Password visibility toggles
+  document.querySelectorAll('.input-toggle-pw').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = btn.closest('.input-group').querySelector('input');
+      if (input) {
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        const icon = btn.querySelector('[data-lucide]');
+        if (icon) {
+          icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+          lucide.createIcons();
+        }
+      }
     });
   });
 

@@ -69,7 +69,10 @@ async def search(
         images = []
         for img in (p.images or []):
             try:
-                url = generate_presigned_url(img.s3_key)
+                if img.s3_key.startswith(("http://", "https://", "/v1/static/")):
+                    url = img.s3_key
+                else:
+                    url = generate_presigned_url(img.s3_key)
             except Exception:
                 url = ""
             images.append({"id": str(img.id), "url": url, "position": img.position})

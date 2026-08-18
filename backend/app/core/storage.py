@@ -39,26 +39,32 @@ def ensure_bucket_exists() -> None:
 def upload_image(image_bytes: bytes, content_type: str = "image/jpeg", prefix: str = "products") -> str:
     """
     Upload an image to S3 and return the object key.
-
-    Args:
-        image_bytes: Raw image bytes.
-        content_type: MIME type of the image.
-        prefix: S3 key prefix (folder).
-
-    Returns:
-        The S3 object key (e.g., "products/abc123.jpg").
+    Falls back to local file storage if S3 is not configured or reachable.
     """
+    import os
     ext = content_type.split("/")[-1] if "/" in content_type else "jpg"
-    key = f"{prefix}/{uuid4().hex}.{ext}"
+    filename = f"{uuid4().hex}.{ext}"
+    key = f"{prefix}/{filename}"
 
-    client = _get_s3_client()
-    client.upload_fileobj(
-        io.BytesIO(image_bytes),
-        settings.s3_bucket_name,
-        key,
-        ExtraArgs={"ContentType": content_type},
-    )
-    return key
+    try:
+        client = _get_s3_client()
+        client.upload_fileobj(
+            io.BytesIO(image_bytes),
+            settings.s3_bucket_name,
+            key,
+            ExtraArgs={"ContentType": content_type},
+        )
+        return key
+    except Exception:
+        # Fallback to local storage when S3/MinIO is unreachable
+        local_dir = os.path.join("static", "uploads")
+        os.makedirs(local_dir, exist_ok=True)
+        local_path = os.path.join(local_dir, filename)
+        
+        with open(local_path, "wb") as f:
+            f.write(image_bytes)
+            
+        return f"/v1/static/uploads/{filename}"
 
 
 def generate_presigned_url(key: str) -> str:

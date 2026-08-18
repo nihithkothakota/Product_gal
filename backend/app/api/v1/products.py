@@ -38,7 +38,7 @@ def _product_to_response(product) -> ProductResponse:
     images = []
     for img in (product.images or []):
         try:
-            if img.s3_key.startswith(("http://", "https://")):
+            if img.s3_key.startswith(("http://", "https://", "/v1/static/")):
                 url = img.s3_key
             else:
                 url = generate_presigned_url(img.s3_key)
