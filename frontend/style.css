@@ -1107,12 +1107,15 @@ img { display: block; max-width: 100%; }
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 200;
   animation: fadeIn 0.15s ease;
+  overflow-y: auto;
+  padding: 40px 20px;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -1123,22 +1126,36 @@ img { display: block; max-width: 100%; }
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 28px;
+  padding: 32px;
   position: relative;
-  animation: modalUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 24px 80px rgba(0,0,0,0.15);
+  margin: auto;
+  animation: modalUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.18);
+  overflow: hidden;
 }
 
-.modal-wide { max-width: 560px; }
+.modal::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.modal-wide { max-width: 580px; }
 
 @keyframes modalUp {
-  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.modal-header { margin-bottom: 20px; }
-.modal-header h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.3px; color: var(--text-primary); }
-.modal-desc { color: var(--text-tertiary); font-size: 0.9rem; margin-top: 4px; }
+.modal-header { margin-bottom: 24px; position: relative; z-index: 1; }
+.modal-header h2 { font-family: var(--font-serif); font-size: 1.8rem; font-weight: normal; color: var(--text-primary); }
+.modal-desc { color: var(--text-tertiary); font-size: 0.9rem; margin-top: 6px; }
 
 .modal-close-btn {
   position: absolute;
@@ -2061,37 +2078,49 @@ img { display: block; max-width: 100%; }
 .modal .field textarea,
 .modal .field select {
   padding: 12px 16px;
-  background: var(--bg-card);
-  border: 2px solid transparent;
+  background: #fafafa;
+  border: 1px solid var(--border);
   border-radius: 12px;
   color: var(--text-primary);
   font-family: inherit;
   font-size: 0.95rem;
   outline: none;
-  transition: all 0.25s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Custom dropdown arrow for selects in modals */
+.modal .field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b5cf6' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 14px;
+  padding-right: 40px;
 }
 
 .modal .field input:hover,
 .modal .field textarea:hover,
 .modal .field select:hover {
-  background: var(--bg-card-hover);
+  background: var(--bg-primary);
+  border-color: var(--border-hover);
 }
 
 .modal .field input:focus,
 .modal .field textarea:focus,
 .modal .field select:focus {
-  border-color: var(--accent);
+  border-color: var(--purple);
   background: var(--bg-primary);
-  box-shadow: 0 0 0 4px rgba(26, 26, 26, 0.06);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12);
 }
 
 .modal .field label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--purple);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
 }
 
 /* Upgraded modal buttons */
@@ -2101,12 +2130,17 @@ img { display: block; max-width: 100%; }
   font-size: 0.95rem;
   font-weight: 600;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-top: 8px;
+  margin-top: 12px;
+  background: linear-gradient(135deg, var(--purple) 0%, #6366f1 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
 }
 
 .modal .btn-primary:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(26, 26, 26, 0.2);
 }
 
 /* ═══════════════════════════════════════════════════════

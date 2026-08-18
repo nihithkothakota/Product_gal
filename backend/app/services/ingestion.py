@@ -128,10 +128,13 @@ async def extract_from_url(url: str) -> ExtractionResult:
             timeout=15.0,
             headers={
                 "User-Agent": (
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/120.0.0.0 Safari/537.36"
-                )
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                ),
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.5",
+                "Connection": "keep-alive",
+                "Upgrade-Insecure-Requests": "1",
             },
         ) as client:
             response = await client.get(url)
@@ -161,6 +164,25 @@ async def extract_from_url(url: str) -> ExtractionResult:
             if abs_img.startswith(("http://", "https://")) and abs_img not in resolved:
                 resolved.append(abs_img)
     result.image_urls = resolved
+
+    # Clean up generic site/captcha titles to avoid wrong autofills
+    if result.title:
+        title_lower = result.title.lower().strip()
+        generic_titles = {
+            "amazon.in", "amazon", "amazon.com", "amazon.co.uk",
+            "flipkart", "flipkart.com",
+            "myntra", "myntra.com",
+            "ajio", "ajio.com",
+            "nykaa", "nykaa.com",
+            "meesho", "meesho.com",
+            "etsy", "etsy.com",
+            "ebay", "ebay.com",
+            "instagram", "pinterest", "facebook",
+            "log in • instagram", "pinterest india",
+            "security check", "robot check", "captcha", "just a moment..."
+        }
+        if title_lower in generic_titles or any(kw in title_lower for kw in ["security check", "robot check", "captcha", "just a moment"]):
+            result.title = None
 
     logger.info(
         "url_extracted",
