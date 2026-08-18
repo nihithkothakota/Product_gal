@@ -1449,7 +1449,13 @@ async function api(path, method = 'GET', body) {
   if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
   const opts = { method, headers };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(`${API}${path}`, opts);
+  let res;
+  try {
+    res = await fetch(`${API}${path}`, opts);
+  } catch (e) {
+    throw new Error('Connection failed. Server might be offline.');
+  }
+
   if (res.status === 204) return null;
 
   if (res.status === 401 && path !== '/auth/login' && path !== '/auth/register') {
@@ -1463,7 +1469,14 @@ async function api(path, method = 'GET', body) {
     throw new Error('Session expired');
   }
 
-  const data = await res.json();
+  let data;
+  const contentType = res.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    data = await res.json();
+  } else {
+    const text = await res.text();
+    throw new Error(text || `HTTP Error ${res.status}`);
+  }
   if (!res.ok) throw new Error(data.detail || `Error ${res.status}`);
   return data;
 }
