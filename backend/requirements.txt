@@ -19,6 +19,7 @@ bcrypt==4.3.0
 
 # HTTP & Scraping
 httpx==0.28.1
+curl-cffi==0.16.0
 beautifulsoup4==4.13.4
 lxml==5.4.0
 
